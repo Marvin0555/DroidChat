@@ -40,7 +40,7 @@ fun ProfilePictureSelector(
             contentScale = ContentScale.Crop
         )
         Spacer(
-            modifier = Modifier.height(4.dp)
+            modifier = Modifier.height(8.dp)
         )
 
         Text(

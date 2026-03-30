@@ -43,7 +43,11 @@ import com.example.droidchat.ui.theme.DroidChatTheme
 
 @Composable
 fun SignInRoute(
-    viewModel: SignInViewModel = viewModel(),
+    viewModel: SignInViewModel = viewModel{
+        SignInViewModel(
+            formValidator = SignInFormValidator()
+        )
+    },
     navigateToSignUp: () -> Unit
 ) {
     val formState = viewModel.formState

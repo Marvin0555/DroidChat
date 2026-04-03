@@ -10,7 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 //@HiltViewModel
-class SignInViewModel(
+class SignInViewModel @Inject constructor(
     private val formValidator: FormValidator<SignInFormState>
 ) : ViewModel() {
 

@@ -1,6 +1,7 @@
 package com.example.droidchat.data.repository
 
 import com.example.droidchat.data.di.IoDispatcher
+import com.example.droidchat.data.manager.TokenManager
 import com.example.droidchat.data.network.NetworkDataSource
 import com.example.droidchat.data.network.model.AuthRequest
 import com.example.droidchat.data.network.model.CreateAccountRequest
@@ -13,6 +14,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource,
+    private val tokenManager: TokenManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AuthRepository {
     override suspend fun signUp(createAccount: CreateAccount): Result<Unit> {
@@ -31,13 +33,18 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signIn(username: String, password: String) {
-        networkDataSource.signIn(
-            request = AuthRequest(
-                userName = username,
-                password = password
-            )
-        )
+    override suspend fun signIn(username: String, password: String): Result<Unit> {
+        return withContext(ioDispatcher) {
+            runCatching {
+                val tokenResponse = networkDataSource.signIn(
+                    request = AuthRequest(
+                        username = username,
+                        password = password
+                    )
+                )
+                tokenManager.saveAccessToken(tokenResponse.token)
+            }
+        }
     }
 
     override suspend fun uploadProfilePicture(filePatch: String) : Result<Image> {

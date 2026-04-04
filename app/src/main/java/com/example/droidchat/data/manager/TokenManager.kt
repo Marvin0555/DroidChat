@@ -8,5 +8,5 @@ interface TokenManager {
 
     suspend fun saveAccessToken(token: String)
 
-    suspend fun clearAccess()
+    suspend fun clearAccessToken()
 }

@@ -2,22 +2,30 @@ package com.example.droidchat.data.manager
 
 import android.content.Context
 import com.example.droidchat.data.datastore.TokensKeys
+import com.example.droidchat.data.di.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.withContext
 
 class SecureTokenManagerImpl @Inject constructor (
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : TokenManager {
     override val accessToken: Flow<String>
         get() = flowOf(CryptoManager.decryptData(context = context, TokensKeys.ACCESS_TOKEN.name))
 
     override suspend fun saveAccessToken(token: String) {
-        CryptoManager.encryptData(context = context, TokensKeys.ACCESS_TOKEN.name, token)
+        withContext(ioDispatcher){
+            CryptoManager.encryptData(context = context, TokensKeys.ACCESS_TOKEN.name, token)
+        }
     }
 
-    override suspend fun clearAccess() {
-        CryptoManager.encryptData(context = context, TokensKeys.ACCESS_TOKEN.name, "")
+    override suspend fun clearAccessToken() {
+        withContext(ioDispatcher) {
+            CryptoManager.encryptData(context = context, TokensKeys.ACCESS_TOKEN.name, "")
+        }
     }
 }

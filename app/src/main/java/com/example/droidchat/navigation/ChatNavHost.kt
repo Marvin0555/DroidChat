@@ -1,5 +1,6 @@
 package com.example.droidchat.navigation
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -35,6 +36,7 @@ sealed interface Route {
 @Composable
 fun ChatNavHost() {
     val navController = rememberNavController()
+    val activity = LocalContext.current as? Activity
 
     NavHost(
         navController = navController,
@@ -52,6 +54,12 @@ fun ChatNavHost() {
                             }
                         }
                     )
+                },
+                onNavigateToMain = {
+                    Toast.makeText(navController.context, "Navigate to main", Toast.LENGTH_SHORT).show()
+                },
+                onCloseApp = {
+                    activity?.finish()
                 }
             )
 

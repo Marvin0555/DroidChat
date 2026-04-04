@@ -32,7 +32,7 @@ class TokenManagerImpl @Inject constructor(
         }
     }
 
-    override suspend fun clearAccess() {
+    override suspend fun clearAccessToken() {
         withContext(ioDispatcher) {
             tokeDataStore.edit { preferences ->
                 preferences.remove(TokensKeys.ACCESS_TOKEN)

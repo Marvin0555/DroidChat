@@ -49,22 +49,22 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpRoute(
-    viewModal: SignUpViewModal = hiltViewModel(),
+    viewModel: SignUpViewModal = hiltViewModel(),
     onSignUpSuccess: () -> Unit,
 ) {
-    val formState = viewModal.formState
+    val formState = viewModel.formState
     SignUpScreen(
         formState = formState,
-        onFormEvent = viewModal::OnFormEvent
+        onFormEvent = viewModel::OnFormEvent
     )
     if(formState.isSignedUp) {
         AppDialog(
             onDismissRequest = {
-                viewModal.signUpSuccessShown()
+                viewModel.signUpSuccessShown()
                 onSignUpSuccess()
             },
             onConfirmButtonClick = {
-                viewModal.signUpSuccessShown()
+                viewModel.signUpSuccessShown()
                 onSignUpSuccess()
             },
             message = stringResource(R.string.feature_sign_up_success),
@@ -73,8 +73,8 @@ fun SignUpRoute(
 
     formState.apiErrorMessageResId?.let { resId ->
         AppDialog(
-            onDismissRequest = viewModal::errorMessageShown,
-            onConfirmButtonClick = viewModal::errorMessageShown,
+            onDismissRequest = viewModel::errorMessageShown,
+            onConfirmButtonClick = viewModel::errorMessageShown,
             message = stringResource(resId),
             title = stringResource(R.string.common_generic_error_title)
         )

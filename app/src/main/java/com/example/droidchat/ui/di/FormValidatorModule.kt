@@ -1,5 +1,7 @@
 package com.example.droidchat.ui.di
 
+import com.example.droidchat.ui.feature.signin.SignInFormState
+import com.example.droidchat.ui.feature.signin.SignInFormValidator
 import com.example.droidchat.ui.feature.signup.SignUpFormState
 import com.example.droidchat.ui.feature.signup.SignUpFormValidator
 import com.example.droidchat.ui.validator.FormValidator
@@ -14,5 +16,8 @@ interface FormValidatorModule {
 
     @Binds
     fun bindSignUpFormValidator(formValidator: SignUpFormValidator): FormValidator<SignUpFormState>
+
+    @Binds
+    fun bindSignInFormValidator(formValidator: SignInFormValidator): FormValidator<SignInFormState>
 
 }

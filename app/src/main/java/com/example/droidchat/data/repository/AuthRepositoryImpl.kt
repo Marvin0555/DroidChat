@@ -6,6 +6,7 @@ import com.example.droidchat.data.network.model.AuthRequest
 import com.example.droidchat.data.network.model.CreateAccountRequest
 import com.example.droidchat.model.CreateAccount
 import com.example.droidchat.model.Image
+import com.example.droidchat.model.Token
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,13 +32,21 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signIn(username: String, password: String) {
-        networkDataSource.signIn(
-            request = AuthRequest(
-                userName = username,
-                password = password
-            )
-        )
+    override suspend fun signIn(username: String, password: String): Result<Token> {
+        return withContext(ioDispatcher) {
+            runCatching {
+                val tokenResponse = networkDataSource.signIn(
+                    request = AuthRequest(
+                        username = username,
+                        password = password
+                    )
+                )
+
+                Token(
+                    token = tokenResponse.token
+                )
+            }
+        }
     }
 
     override suspend fun uploadProfilePicture(filePatch: String) : Result<Image> {

@@ -34,8 +34,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.droidchat.R
+import com.example.droidchat.ui.components.AppDialog
 import com.example.droidchat.ui.components.PrimaryButton
 import com.example.droidchat.ui.components.PrimaryTextField
 import com.example.droidchat.ui.theme.BackgroundGradient
@@ -43,11 +45,7 @@ import com.example.droidchat.ui.theme.DroidChatTheme
 
 @Composable
 fun SignInRoute(
-    viewModel: SignInViewModel = viewModel{
-        SignInViewModel(
-            formValidator = SignInFormValidator()
-        )
-    },
+    viewModel: SignInViewModel = hiltViewModel(),
     navigateToSignUp: () -> Unit
 ) {
     val formState = viewModel.formState
@@ -56,6 +54,26 @@ fun SignInRoute(
         onFormEvent = viewModel::onFormEvent,
         onRegisterClick = navigateToSignUp
     )
+    if(formState.isLoginSuccess) {
+        AppDialog(
+            onDismissRequest = {
+                viewModel.signInSuccessShow()
+            },
+            onConfirmButtonClick = {
+                viewModel.signInSuccessShow()
+            },
+            message = stringResource(R.string.feature_login_register),
+        )
+    }
+
+    formState.apiErrorMessageResId?.let { resId ->
+        AppDialog(
+            onDismissRequest = viewModel::errorMessageShown,
+            onConfirmButtonClick = viewModel::errorMessageShown,
+            message = stringResource(resId),
+            title = stringResource(R.string.common_generic_error_title)
+        )
+    }
 }
 
 @Composable

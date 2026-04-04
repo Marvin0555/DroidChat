@@ -4,14 +4,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.droidchat.R
+import com.example.droidchat.data.repository.AuthRepository
+import com.example.droidchat.model.NetworkException
 import com.example.droidchat.ui.validator.FormValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.Int
 
-//@HiltViewModel
+@HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val formValidator: FormValidator<SignInFormState>
+    private val formValidator: FormValidator<SignInFormState>,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     var formState by mutableStateOf(SignInFormState())
@@ -50,6 +56,31 @@ class SignInViewModel @Inject constructor(
 
         if(isValidForm()) {
             formState = formState.copy(isLoading = true)
+            viewModelScope.launch {
+                authRepository.signIn(
+                    username = formState.email,
+                    password = formState.password
+
+                ).fold(
+                    onSuccess = {
+                        formState = formState.copy(
+                            isLoading = false,
+                            isLoginSuccess = true
+                        )
+                    },
+                    onFailure = {
+                        formState = formState.copy(
+                            isLoading = false,
+                            apiErrorMessageResId = if (it is NetworkException.ApiException) {
+                                when(it.statusCode) {
+                                    401 -> R.string.error_message_api_form_validation_failed
+                                    else -> R.string.common_generic_error_message
+                                }
+                            } else  R.string.common_generic_error_message
+                        )
+                    }
+                )
+            }
         }
     }
 
@@ -64,6 +95,14 @@ class SignInViewModel @Inject constructor(
             emailError = null,
             passwordError = null,
         )
+    }
+
+    fun errorMessageShown(){
+        formState = formState.copy(apiErrorMessageResId = null)
+    }
+
+    fun signInSuccessShow() {
+        formState = formState.copy(isLoginSuccess = false)
     }
 
 }

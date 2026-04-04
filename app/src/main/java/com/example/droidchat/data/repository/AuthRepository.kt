@@ -5,12 +5,13 @@ import com.example.droidchat.data.network.model.ImageResponse
 import com.example.droidchat.data.network.model.TokenResponse
 import com.example.droidchat.model.CreateAccount
 import com.example.droidchat.model.Image
+import com.example.droidchat.model.Token
 
 interface AuthRepository {
 
     suspend fun signUp(createAccount: CreateAccount): Result<Unit>
 
-    suspend fun signIn(username: String, password: String)
+    suspend fun signIn(username: String, password: String): Result<Token>
 
     suspend fun uploadProfilePicture(filePatch: String): Result<Image>
 

@@ -1,15 +1,14 @@
 package com.example.droidchat.data.repository
 
 import com.example.droidchat.data.di.IoDispatcher
-import com.example.droidchat.data.manager.TokenManager
+import com.example.droidchat.data.manager.selfuser.SelfUserManager
+import com.example.droidchat.data.manager.token.TokenManager
 import com.example.droidchat.data.network.NetworkDataSource
 import com.example.droidchat.data.network.model.AuthRequest
 import com.example.droidchat.data.network.model.CreateAccountRequest
 import com.example.droidchat.model.CreateAccount
 import com.example.droidchat.model.Image
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -17,6 +16,7 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource,
     private val tokenManager: TokenManager,
+    private  val selfUserManager: SelfUserManager,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AuthRepository {
     override suspend fun getAccessToken(): String? {
@@ -78,6 +78,13 @@ class AuthRepositoryImpl @Inject constructor(
         return withContext(ioDispatcher) {
             runCatching {
                 val userResponse = networkDataSource.authenticate(token)
+
+                selfUserManager.saveSelfUserData(
+                    firstName = userResponse.firstName,
+                    lastName = userResponse.lastName,
+                    profilePictureUrl = userResponse.profilePictureUrl ?: "",
+                    username = userResponse.username
+                )
             }
         }
 

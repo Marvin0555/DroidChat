@@ -1,6 +1,5 @@
 package com.example.droidchat.ui.feature.splash
 
-import android.window.SplashScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +28,6 @@ import com.example.droidchat.R
 import com.example.droidchat.ui.components.AppDialog
 import com.example.droidchat.ui.theme.BackgroundGradient
 import com.example.droidchat.ui.theme.DroidChatTheme
-import kotlinx.coroutines.delay
 
 @Composable
 fun SplashRoute(
@@ -52,12 +46,14 @@ fun SplashRoute(
 
     LaunchedEffect(Unit) {
         viewModel.authenticationState.collect { authenticationState ->
-            when(authenticationState) {
-                SplashViewModel.AuthenticationState.UserAuthenticated -> {
-                    onNavigateToMain()
-                }
-                SplashViewModel.AuthenticationState.UserNotAuthenticated -> {
-                    onNavigateToSignIn()
+            if (authenticationState != null) {
+                when(authenticationState) {
+                    SplashViewModel.AuthenticationState.UserAuthenticated -> {
+                        onNavigateToMain()
+                    }
+                    SplashViewModel.AuthenticationState.UserNotAuthenticated -> {
+                        onNavigateToSignIn()
+                    }
                 }
             }
         }
@@ -102,12 +98,10 @@ fun SplashScreen() {
                 painter = painterResource(id = R.drawable.ic_safety),
                 contentDescription = null,
             )
-//            val context = LocalContext.current
             Spacer(modifier = Modifier.width(8.dp) )
             Text(
                 textAlign = TextAlign.Center,
                 color = Color.White,
-//                text = context.getString(R.string.splash_safety_info)
                 text = stringResource(id = R.string.splash_safety_info),
                 style = MaterialTheme.typography.bodyMedium
             )

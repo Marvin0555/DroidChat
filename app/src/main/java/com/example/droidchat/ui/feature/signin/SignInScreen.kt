@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.droidchat.R
 import com.example.droidchat.ui.components.AppDialog
 import com.example.droidchat.ui.components.PrimaryButton
@@ -55,7 +54,8 @@ fun SignInRoute(
     val formState = viewModel.formState
     val genericErrorMessage: String = stringResource(id = R.string.common_generic_error_message)
     var showUnauthorizedError by remember {  mutableStateOf(false) }
-    LaunchedEffect(true) {
+
+    LaunchedEffect(viewModel.signInActionFlow) {
         viewModel.signInActionFlow.collect { action ->
             when (action) {
                 SignInViewModel.SignInAction.Success -> {
